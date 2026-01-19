@@ -4,8 +4,8 @@ Este proyecto se realiza sobre el clúster Hadoop dockerizado del aula.
 Por defecto, el `docker-compose.yml` incluye **1 servicio DataNode+NodeManager** llamado `dnnm`.
 
 ### Recomendación (para el proyecto)
-- ✅ **Base recomendada:** **3 DataNodes** (permite replicación 2–3 y tolerancia a fallos realista).
-- ⭐ **Extra / reto:** **4 DataNodes** (permite comparar replicación 1/2/3/4).
+-  **Base recomendada:** **3 DataNodes** (permite replicación 2–3 y tolerancia a fallos realista).
+-  **Extra / reto:** **4 DataNodes** (permite comparar replicación 1/2/3/4).
 
 > Nota importante: la **replicación efectiva** de HDFS no puede ser mayor que el número de DataNodes vivos.  
 > Si configuras `dfs.replication=3` pero solo hay 1 DataNode, verás bloques **UNDER_REPLICATED** de forma constante.
