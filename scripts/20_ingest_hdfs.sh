@@ -8,13 +8,22 @@ LOCAL_DIR=${LOCAL_DIR:-./data_local/$DT}
 echo "[ingest] DT=$DT"
 echo "[ingest] Local dir=$LOCAL_DIR"
 
-# TODO:
-# 1) Subir a HDFS en:
-#    /data/logs/raw/dt=$DT/
-#    /data/iot/raw/dt=$DT/
-# 2) Mostrar evidencias con -ls y -du
+LOG_FILE="$LOCAL_DIR/logs_${DT//-/}.log"
+IOT_FILE="$LOCAL_DIR/iot_${DT//-/}.jsonl"
 
-# Pista:
-# docker exec -it $NN_CONTAINER bash -lc "hdfs dfs -put -f ..."
+if [[ ! -f "$LOG_FILE" || ! -f "$IOT_FILE" ]]; then
+  echo "[ingest] ERROR: no se encuentran los ficheros en $LOCAL_DIR"
+  echo "[ingest] Esperados: $LOG_FILE y $IOT_FILE"
+  exit 1
+fi
 
-echo "[ingest] TODO completarlo."
+echo "[ingest] Copiando al contenedor $NN_CONTAINER:/tmp"
+docker cp "$LOG_FILE" "$NN_CONTAINER:/tmp/$(basename "$LOG_FILE")"
+docker cp "$IOT_FILE" "$NN_CONTAINER:/tmp/$(basename "$IOT_FILE")"
+
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -put -f /tmp/$(basename "$LOG_FILE") /data/logs/raw/dt=$DT/"
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -put -f /tmp/$(basename "$IOT_FILE") /data/iot/raw/dt=$DT/"
+
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -ls -R /data"
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -du -h /data"
+echo "[ingest] OK"

@@ -9,7 +9,7 @@ DT=${DT:-$(date +%F)}
 
 echo "[bootstrap] DT=$DT"
 
-# TODO: Crea la estructura HDFS base:
+# Crea la estructura HDFS base:
 #   /data/logs/raw/dt=$DT/
 #   /data/iot/raw/dt=$DT/
 #   /backup/... (si Variante A)
@@ -18,4 +18,14 @@ echo "[bootstrap] DT=$DT"
 # Pista:
 #   docker exec -it $NN_CONTAINER bash -lc "hdfs dfs -mkdir -p ..."
 
-echo "[bootstrap] TODO completarlo."
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -mkdir -p \
+  /data/logs/raw/dt=$DT \
+  /data/iot/raw/dt=$DT \
+  /backup/logs/raw/dt=$DT \
+  /backup/iot/raw/dt=$DT \
+  /audit/fsck/$DT \
+  /audit/inventory/$DT"
+
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -ls -R /data || true"
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -ls -R /backup || true"
+echo "[bootstrap] OK"

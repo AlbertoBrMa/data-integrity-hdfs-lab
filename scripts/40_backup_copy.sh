@@ -9,8 +9,11 @@ DT=${DT:-$(date +%F)}
 
 echo "[backup] DT=$DT"
 
-# TODO (Variante A):
-# - Copiar /data/.../dt=$DT/ -> /backup/.../dt=$DT/
-# - Registrar logs y validar que existen rutas en destino
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -mkdir -p /backup/logs/raw/dt=$DT /backup/iot/raw/dt=$DT"
 
-echo "[backup] TODO completarlo."
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -cp -f /data/logs/raw/dt=$DT/* /backup/logs/raw/dt=$DT/"
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -cp -f /data/iot/raw/dt=$DT/* /backup/iot/raw/dt=$DT/"
+
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -ls -R /backup/logs/raw/dt=$DT"
+docker exec "$NN_CONTAINER" bash -lc "hdfs dfs -ls -R /backup/iot/raw/dt=$DT"
+echo "[backup] OK"
